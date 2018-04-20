@@ -7,7 +7,7 @@ package virtual.machine.ii;
 
 /**
  *
- * @author ASUS
+ * @author Luis Andrino
  */
 public class VirtualMachineII {
 
