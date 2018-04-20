@@ -16,6 +16,8 @@ public class VirtualMachineII {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        VM2 Form = new VM2();
+         Form.setVisible(true);
     }
     
 }

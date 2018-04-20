@@ -38,6 +38,12 @@ public class CodeWriter {
         }
 
     }
+    
+     public void setFileName(File fileOut){
+
+        fileName = fileOut.getName();
+
+    }
 
 
 
