@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * @author Luis Andrino 
  */
 public class Parser {
-      private Scanner cmds;
+     private Scanner cmds;
     private String currentCmd;
     public static final int ARITHMETIC = 0;
     public static final int PUSH = 1;
@@ -41,10 +41,7 @@ public class Parser {
 
     }
 
-    /**
-     * Opens the input file and get ready to parse it
-     * @param fileIn
-     */
+
     public Parser(File fileIn) {
 
         argType = -1;
@@ -69,36 +66,29 @@ public class Parser {
             cmds = new Scanner(preprocessed.trim());
 
         } catch (FileNotFoundException e) {
-            System.out.println("File not found!");
+            System.out.println("error");
         }
 
     }
 
 
-    /**
-     * Are there more command to read
-     * @return
-     */
     public boolean hasMoreCommands(){
 
        return cmds.hasNextLine();
     }
 
-    /**
-     * Reads next command from the input and makes it current command
-     * Be called only when hasMoreCommands() returns true
-     */
+   
     public void advance(){
 
         currentCmd = cmds.nextLine();
-        argument1 = "";//initialize arg1
-        argument2 = -1;//initialize arg2
+        argument1 = "";
+        argument2 = -1;
 
         String[] segs = currentCmd.split(" ");
 
         if (segs.length > 3){
 
-            throw new IllegalArgumentException("Too much arguments!");
+            throw new IllegalArgumentException("error");
 
         }
 
@@ -146,7 +136,7 @@ public class Parser {
 
             }else {
 
-                throw new IllegalArgumentException("Unknown Command Type!");
+                throw new IllegalArgumentException("error de comando");
 
             }
 
@@ -158,7 +148,7 @@ public class Parser {
 
                 }catch (Exception e){
 
-                    throw new IllegalArgumentException("Argument2 is not an integer!");
+                    throw new IllegalArgumentException("error en argumento 2!");
 
                 }
 
@@ -167,11 +157,7 @@ public class Parser {
 
     }
 
-    /**
-     * retorna el tipo de comando 
-     * aritmetico es retornado para todos los tipo aritmetico
-     * @return
-     */
+   
     public int commandType(){
 
         if (argType != -1) {
@@ -180,18 +166,13 @@ public class Parser {
 
         }else {
 
-            throw new IllegalStateException("No hay comandos");
+            throw new IllegalStateException("error en comando!");
 
         }
 
     }
 
-    /**
-     * Retorna el primer argumento del comando
-     * cuando es aritmetico se retorna el mismo
-     * cuando es return no se debe llamar 
-     * @return
-     */
+ 
     public String arg1(){
 
         if (commandType() != RETURN){
@@ -200,17 +181,13 @@ public class Parser {
 
         }else {
 
-            throw new IllegalStateException("no se puede obtener el argumento de un tipo return ");
+            throw new IllegalStateException("error de comando");
 
         }
 
     }
 
-    /**
-     * retorna el segundo argumento 
-     * es llamado cuando es  PUSH, POP, FUNCTION o CALL
-     * @return
-     */
+  
     public int arg2(){
 
         if (commandType() == PUSH || commandType() == POP || commandType() == FUNCTION || commandType() == CALL){
@@ -219,11 +196,12 @@ public class Parser {
 
         }else {
 
-            throw new IllegalStateException("no se puede obtener el argumento 2");
+            throw new IllegalStateException("error arg2");
 
         }
 
     }
+
 
     public static String noComments(String strIn){
 
@@ -254,7 +232,6 @@ public class Parser {
         return result;
     }
 
-
     public static String getExt(String fileName){
 
         int index = fileName.lastIndexOf('.');
@@ -269,5 +246,4 @@ public class Parser {
 
         }
     }
-    
 }

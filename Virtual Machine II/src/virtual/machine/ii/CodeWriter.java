@@ -16,7 +16,8 @@ import java.util.regex.Pattern;
  */
 public class CodeWriter {
      
- private int JumpFlag;
+ 
+    private int JumpFlag;
     private PrintWriter outPrinter;
     private static final Pattern labelReg = Pattern.compile("^[^0-9][0-9A-Za-z\\_\\:\\.\\$]+");
     private static int labelCnt = 0;
@@ -38,13 +39,13 @@ public class CodeWriter {
         }
 
     }
-    
-     public void setFileName(File fileOut){
+
+ 
+    public void setFileName(File fileOut){
 
         fileName = fileOut.getName();
 
     }
-
 
 
     public void writeArithmetic(String command){
@@ -67,17 +68,17 @@ public class CodeWriter {
 
         }else if (command.equals("gt")){
 
-            outPrinter.print(arithmeticTemplate2("JLE"));//no es  <=
+            outPrinter.print(arithmeticTemplate2("JLE"));//not <=
             JumpFlag++;
 
         }else if (command.equals("lt")){
 
-            outPrinter.print(arithmeticTemplate2("JGE"));//no es  >=
+            outPrinter.print(arithmeticTemplate2("JGE"));//not >=
             JumpFlag++;
 
         }else if (command.equals("eq")){
 
-            outPrinter.print(arithmeticTemplate2("JNE"));//no es  <>
+            outPrinter.print(arithmeticTemplate2("JNE"));//not <>
             JumpFlag++;
 
         }else if (command.equals("not")){
@@ -90,15 +91,15 @@ public class CodeWriter {
 
         }else {
 
-            throw new IllegalArgumentException("Call writeArithmetic() for a non-arithmetic command");
+            throw new IllegalArgumentException("error");
 
         }
 
     }
 
-   /**
-     * tracude el comando a assembly
-     * donde el comando es push o pop
+    /**
+     * Write the assembly code that is the translation of the given command
+     * where the command is either PUSH or POP
      * @param command PUSH or POP
      * @param segment
      * @param index
@@ -140,7 +141,6 @@ public class CodeWriter {
                 outPrinter.print(pushTemplate1("THAT",index,true));
 
             }else if (segment.equals("static")){
-                //every file has its static space
                 outPrinter.print("@" + fileName + index + "\n" + "D=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
 
             }
@@ -176,23 +176,20 @@ public class CodeWriter {
                 outPrinter.print(popTemplate1("THAT",index,true));
 
             }else if (segment.equals("static")){
-                //every file has its static space
+                
                 outPrinter.print("@" + fileName + index + "\nD=A\n@R13\nM=D\n@SP\nAM=M-1\nD=M\n@R13\nA=M\nM=D\n");
 
             }
 
         }else {
 
-            throw new IllegalArgumentException("se llamo a un comando push pop de forma erronea");
+            throw new IllegalArgumentException("error");
 
         }
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando label 
-     * @param label
-     */
+ 
     public void writeLabel(String label){
 
         Matcher m = labelReg.matcher(label);
@@ -203,16 +200,13 @@ public class CodeWriter {
 
         }else {
 
-            throw new IllegalArgumentException("formato erroneo de label");
+            throw new IllegalArgumentException("error");
 
         }
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando label 
-     * @param label
-     */
+    
     public void writeGoto(String label){
 
         Matcher m = labelReg.matcher(label);
@@ -223,16 +217,13 @@ public class CodeWriter {
 
         }else {
 
-            throw new IllegalArgumentException("Wrong label format!");
+            throw new IllegalArgumentException("error");
 
         }
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando if-goto
-     * @param label
-     */
+  
     public void writeIf(String label){
 
         Matcher m = labelReg.matcher(label);
@@ -243,15 +234,13 @@ public class CodeWriter {
 
         }else {
 
-            throw new IllegalArgumentException("Wrong label format!");
+            throw new IllegalArgumentException("error");
 
         }
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el init del VM
-     */
+
     public void writeInit(){
 
         outPrinter.print("@256\n" +
@@ -262,16 +251,12 @@ public class CodeWriter {
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando call
-     * @param functionName
-     * @param numArgs
-     */
+   
     public void writeCall(String functionName, int numArgs){
 
         String newLabel = "RETURN_LABEL" + (labelCnt++);
 
-        outPrinter.print("@" + newLabel + "\n" + "D=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");//push return address
+        outPrinter.print("@" + newLabel + "\n" + "D=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         outPrinter.print(pushTemplate1("LCL",0,true));//push LCL
         outPrinter.print(pushTemplate1("ARG",0,true));//push ARG
         outPrinter.print(pushTemplate1("THIS",0,true));//push THIS
@@ -296,20 +281,14 @@ public class CodeWriter {
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando return
-     */
+ 
     public void writeReturn(){
 
         outPrinter.print(returnTemplate());
 
     }
 
-    /**
-     * escribe el codigo assembly que afecta el comando function
-     * @param functionName
-     * @param numLocals
-     */
+
     public void writeFunction(String functionName, int numLocals){
 
         outPrinter.print("(" + functionName +")\n");
@@ -322,7 +301,7 @@ public class CodeWriter {
 
     }
 
- 
+  
     public String preFrameTemplate(String position){
 
         return "@R11\n" +
@@ -360,17 +339,14 @@ public class CodeWriter {
                 "0;JMP\n";
     }
 
-  
+
     public void close(){
 
         outPrinter.close();
 
     }
 
-  /**
-     * plantilla para add sub y or
-     * @return
-     */
+ 
     private String arithmeticTemplate1(){
 
         return "@SP\n" +
@@ -380,11 +356,7 @@ public class CodeWriter {
 
     }
 
-     /**
-     * plantilla para gt lt eq
-     * @param type JLE JGT JEQ
-     * @return
-     */
+
     private String arithmeticTemplate2(String type){
 
         return "@SP\n" +
@@ -408,13 +380,7 @@ public class CodeWriter {
     }
 
 
-    /**
-     * plantilla para push local,this,that,argument,temp,pointer,static
-     * @param segment
-     * @param index
-     * @param isDirect 
-     * @return
-     */
+  
     private String pushTemplate1(String segment, int index, boolean isDirect){
 
         //When it is a pointer, just read the data stored in THIS or THAT
@@ -431,16 +397,10 @@ public class CodeWriter {
 
     }
 
-    /**
-     * plantilla pop local,this,that,argument,temp,pointer,static
-     * @param segment
-     * @param index
-     * @param isDirect 
-     * @return
-     */
+  
     private String popTemplate1(String segment, int index, boolean isDirect){
 
-        //When it is a pointer R13 will store the address of THIS or THAT
+        
         String noPointerCode = (isDirect)? "D=A\n" : "D=M\n@" + index + "\nD=D+A\n";
 
         return "@" + segment + "\n" +
@@ -454,5 +414,5 @@ public class CodeWriter {
                 "A=M\n" +
                 "M=D\n";
 
-    }   
+    }
 }
